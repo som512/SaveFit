@@ -43,3 +43,10 @@ sql = "INSERT INTO test2 (user_id, user_pass) VALUE (%s, %s)"
 cursor.execute(sql, ("appearhuman", "sannsuu12"))
 cnx.commit()
 ```
+
+## テーブルメモ
+test1 最初に作ったテーブル。使えない。  
+`user_test`
+```
+CREATE TABLE test1 (id INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(255))
+```

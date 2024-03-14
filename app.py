@@ -102,6 +102,11 @@ def logout():
   session.pop("user_id", None) #削除
   return redirect(url_for("index"))
 
+@app.route("/mypage") #ログアウトする
+def mypage():
+  session.pop("user_id", None) #削除
+  return render_template('mypage.html',user_id=user_id)
+
 @app.route("/live")
 def live():
     if "user_id" in session:

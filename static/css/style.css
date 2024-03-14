@@ -150,6 +150,49 @@ header{
     color: white;
 }
 
+/*---------------post-section-----------------------*/
+.page-main{
+    margin: 10px auto;
+    width: 1300px;
+    border-right: 1px solid gray;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+}
+.home-main-golink{
+    display: flex;
+    justify-content: space-around;
+}
+.home-main-golink-watch, .home-main-golink-live{
+    border: 0px solid gray;
+    border-radius: 50px;
+    width: 300px;
+    height: 100px;
+    text-align: center;
+    margin: 5px;
+}
+.home-main-golink-live{
+    background-color: #ff4500;
+}
+.home-main-golink-watch{
+    background-color: #4169e1;
+
+}
+.home-main-golink-watch-a, .home-main-golink-live-a{
+    display: inline-block;
+    border-radius: 50px;
+    height: 100px;
+    width: 300px;
+    padding-top: 35px;
+}
+.home-main-golink-watch-a span{
+    color: white;
+    font-size: 20px;
+}
+.home-main-golink-live-a span{
+    
+    color: white;
+    font-size: 20px;
+}
 /*------------------register.html-----------------*/
 .warning_id{
     color: red;
