@@ -3,6 +3,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import mysql.connector
 from datetime import timedelta
 import cv2 as cv
+import smtplib, ssl
+from email.mime.text import MIMEText
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,6 +19,24 @@ cursor.close()
 cnx.close()
 '''
 
+'''
+Outlookメール送信
+'''
+def send_message(subject, mail_to, body):
+    my_account = 'savefit@outlook.jp'
+    my_password = 'xNyScr~~L!H3'
+
+    msg = MIMEText(body, 'plain') #メッセージ本文
+    msg['Subject'] = subject #件名
+    msg['To'] = mail_to #宛先
+    msg['From'] = my_account #送信元
+
+    server = smtplib.SMTP('smtp.office365.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(my_account, my_password)
+    server.send_message(msg)
 camera = cv.VideoCapture(0)
 def gen_frames():
    while True:
