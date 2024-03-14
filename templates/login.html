@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+<div class="login">
+  <h2 class="login-header">ログイン</h2>
+
+  <form method="POST" class="login-container">
+    <p><input type="text" name="user_id" placeholder="ID"></p>
+    <div class="login-container-password">
+      <p><input type="password" name="user_pass" placeholder="パスワード" id="password"></p>
+      <input class="login-hidden-button" type="button" id="hidden_button" value="表示">
+  
+    </div>
+    {% if warning == "pass_different" %}
+      <label class="warning_pass_different" for="">パスワードが違います。</label>
+    {% endif %}
+    <p><input type="submit" value="ログイン"></p>
+  </form>
+</div>
+
+
+{% endblock content %}

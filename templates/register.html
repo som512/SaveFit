@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}登録{% endblock %}
+
+{% block content %}
+    <form method="POST" class="register-form">
+        <div class="example">
+            <label for="namelabel">ID</label>
+            <input type="text" name="user_id" id="namelabel" placeholder="ID" pattern="[a-zA-Z0-9]+" title="半角英数字で入力してください。">
+            <label for="">半角英数字16文字以下</label>
+            {% if warning == "id" %}
+                <label class="warning_id" for="">既に使用されているIDです。</label>
+            {% endif %}
+        </div>
+        <div class="example">
+            <label for="maillabel">パスワード</label>
+            <input class="inputs" type="password" name="user_pass" id="password" minlength="6" pattern="[a-zA-Z0-9!-/:-@\[-`{-~]*" placeholder="パスワード" title="半角英数字記号で入力してください。">
+            <input class="button" type="button" id="hidden_button" value="表示">
+            <label for="">6文字以上</label>
+            
+        </div>
+        <div class="example">
+            <input type="submit" value="送信する">
+        </div>  
+    </form>
+
+{% endblock content %}
