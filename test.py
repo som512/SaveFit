@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify, session, url_for, redirect, Response, flash,flash
-from flask_mail import Mail, Messagre
 from werkzeug.security import check_password_hash, generate_password_hash
 import mysql.connector
 from datetime import timedelta
@@ -13,12 +12,16 @@ cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database=
                             password=sqlserver_pass)
 cursor = cnx.cursor()
 
-cursor.execute("CREATE TABLE user_table (\
+cursor.execute("CREATE TABLE user_info (\
                id INT AUTO_INCREMENT PRIMARY KEY, \
-               username VARCHAR(255), \
-               email VARCHAR(255), \
-               password VARCHAR(255)\
+               mail_certification BOOL,\
+               username VARCHAR(16),\
+               email VARCHAR(50),\
+               password VARCHAR(64),\
+               self_introduction VARCHAR(160),\
+               icon_path VARCHAR(59) DEFAULT '/pic/default.png'\
                )")
+
 #SQL処理
 '''
 sql = "select %s from user_test where user_id=%s"

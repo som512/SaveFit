@@ -6,7 +6,7 @@
 
     <main class="page-main">
         <h2>ようこそSaveFitへ</h2>
-        {% if user_id %}
+        {% if user_name %}
             <div class="home-main-golink">
                 <div class="home-main-golink-live">
                     <a href="/live" class="home-main-golink-live-a"><span>配信はこちら</span></a>
@@ -29,7 +29,7 @@
         <div class="post-div">
             <div class="post-div-div1">
                 <div class="post-div-div1-icon"></div>
-                <div class="post-div-div1-username">{{ user_id }}</div>
+                <div class="post-div-div1-username">{{ user_name }}</div>
             </div>
             <div class="post-div-div2">
                 <div class="post-div-div2-message"></div>

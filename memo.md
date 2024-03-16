@@ -44,9 +44,33 @@ cursor.execute(sql, ("appearhuman", "sannsuu12"))
 cnx.commit()
 ```
 
+## テーブル表示
+```
+cursor.execute("SHOW TABLES")
+print(cursor.fetchall())
+```
+
+## テーブル削除
+```
+sql = ("DROP TABLE テーブル名")
+cursor.execute(sql)
+```
+
 ## テーブルメモ
 test1 最初に作ったテーブル。使えない。  
 `user_test`
 ```
 CREATE TABLE test1 (id INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(255))
+```
+`user_info`
+```
+cursor.execute("CREATE TABLE user_info (\
+               id INT AUTO_INCREMENT PRIMARY KEY, \
+               mail_certification BOOL,\
+               username VARCHAR(16),\
+               email VARCHAR(50),\
+               password VARCHAR(64),\
+               self_introduction VARCHAR(160),\
+               icon_path VARCHAR(59) DEFAULT '/pic/default.png'\
+               )")
 ```

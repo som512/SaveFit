@@ -193,8 +193,10 @@ header{
     color: white;
     font-size: 20px;
 }
-/*------------------register.html-----------------*/
-.warning_id{
+
+
+/*------------------login.html-----------------*/
+.warning_pass_different{
     color: red;
 }
 
