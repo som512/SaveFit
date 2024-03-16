@@ -1,36 +1,58 @@
-from flask import Flask, render_template, request, jsonify, session, url_for, redirect, Response, flash,flash
-from werkzeug.security import check_password_hash, generate_password_hash
-import mysql.connector
-from datetime import timedelta
-import cv2 as cv
-from win32com import client
-import os
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sqlserver_pass = "0bcfd12dead37a0c8e69839e2d9d2e7057af194a07590932077030ebe5eb0650"
+from base64 import b64encode, b64decode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+from datetime import datetime, timedelta
 
-cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
-                            password=sqlserver_pass)
-cursor = cnx.cursor()
+# 鍵の作成
+def create_key():
+    key = get_random_bytes(AES.block_size)
 
-cursor.execute("CREATE TABLE user_info (\
-               id INT AUTO_INCREMENT PRIMARY KEY, \
-               mail_certification BOOL,\
-               username VARCHAR(16),\
-               email VARCHAR(50),\
-               password VARCHAR(64),\
-               self_introduction VARCHAR(160),\
-               icon_path VARCHAR(59) DEFAULT '/pic/default.png'\
-               )")
-
-#SQL処理
-'''
-sql = "select %s from user_test where user_id=%s"
-cursor.execute(sql, (user_pass, user_id))
-result = cursor.fetchall()[0][0]
-'''
+    return b64encode(key).decode('utf-8')
 
 
+# 暗号化する
+def encrypt(key, data):
+    key = b64decode(key)
+    data = bytes(data, 'utf-8')
+    cipher = AES.new(key, AES.MODE_CBC)
+    ct_bytes = cipher.encrypt(pad(data, AES.block_size))
+    iv = b64encode(cipher.iv).decode('utf-8')
+    ct = b64encode(ct_bytes).decode('utf-8')
+    return ct, iv
 
 
-cursor.close()
-cnx.close()
+# 復号化する
+def decrypt(key, iv, ct):
+    key = b64decode(key)
+    iv = b64decode(iv)
+    ct = b64decode(ct)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    pt = unpad(cipher.decrypt(ct), AES.block_size)
+    return pt.decode('utf-8')
+
+def encrypt_do(password):
+    key = create_key()
+    ct, iv = encrypt(key, password)
+    pt = decrypt(key, iv, ct)
+    return iv
+password = str(datetime.now() + timedelta(minutes=30))
+print(password)
+# 新しい鍵の作成
+key = create_key()
+# 新しい鍵のprint
+print(key)
+# 暗号化する
+ct, iv = encrypt(key, password)
+# 暗号化したパスワードのprint
+print(ct)
+# padding部のprint
+print(iv)
+# 復号化する
+pt = decrypt(key, iv, ct)
+# 結果確認のため、復号したものをprint
+decrypt_password = datetime.strptime(pt, "%Y-%m-%d %H:%M:%S.%f")
+if datetime.now() > decrypt_password:
+    print(datetime.now())
+    print(decrypt_password)
+

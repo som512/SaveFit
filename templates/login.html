@@ -18,8 +18,7 @@
     {% elif warning == "again" %}
       <label class="warning_again" for="">エラーが発生しました。もう一度ログインしてください。</label>
     {% elif warning == "certification_different" %}
-      <label class="warning_certification_different" for="">仮登録状態になっています。下記のリンクから認証してください。</label>
-      <a href="{{ url_for('templates', filename='register_complete.html') }}">認証はこちら</a>
+      <label class="warning_certification_different" for="">仮登録状態になっています。メールをご確認ください。</label>
     {% endif %}
 
     <p><input type="submit" value="ログイン"></p>

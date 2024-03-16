@@ -1,32 +1,37 @@
-import mysql.connector
+from flask import Flask, render_template, request, jsonify, session, url_for, redirect, Response, flash,flash
 from werkzeug.security import check_password_hash, generate_password_hash
-#database="test",
-cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
-                            password="0bcfd12dead37a0c8e69839e2d9d2e7057af194a07590932077030ebe5eb0650")
+import mysql.connector
+from datetime import timedelta
+import cv2 as cv
+from win32com import client
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+sqlserver_pass = "0bcfd12dead37a0c8e69839e2d9d2e7057af194a07590932077030ebe5eb0650"
 
+cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
 cursor = cnx.cursor()
 
-#cursor.execute("CREATE TABLE user_test (id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(16), user_pass VARCHAR(255))")
+cursor.execute("CREATE TABLE temporary_registration_list (\
+               id INT PRIMARY KEY,\
+               email VARCHAR(50),\
+               time_limit VARCHAR(30),\
+               secret_key VARCHAR(24),\
+               padding_text VARCHAR(24)\
+               )")
+
+cursor.execute("SHOW TABLES")
+print(cursor.fetchall())
+
+#SQL処理
+'''
+sql = "select %s from user_test where user_id=%s"
+cursor.execute(sql, (user_pass, user_id))
+result = cursor.fetchall()[0][0]
+'''
 
 
-sql = "select user_pass as 'user_pass' from user_test where user_id='appearhuman'"
-cursor.execute(sql)
-for i in cursor.fetchall():
-    print(i)
+
 
 cursor.close()
 cnx.close()
-
-import cv2
-
-# VideoCapture オブジェクトを取得します
-capture = cv2.VideoCapture(0)
-
-while(True):
-    ret, frame = capture.read()
-    cv2.imshow('frame',frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-capture.release()
-cv2.destroyAllWindows()

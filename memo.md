@@ -1,4 +1,5 @@
 # mysql-connector-python　使い方
+## 接続
 ## MySQLに接続
 ```
 conn = mysql.connector.connect(
@@ -7,61 +8,74 @@ conn = mysql.connector.connect(
     password="your_password"
 )
 ```
-## カーソル取得
+### カーソル取得
 データベース取得(conn)からカーソルを取得する。
 カーソルとは、クエリ実行のための仮想ポインタの事。
 ```
 cursor = conn.cursor()
 ```
-## データベース作成
-```
-cursor.execute("CREATE DATABASE IF NOT EXISTS mydatabase")
-```
-## データ取得
-```
-sql = "select * from test1"
-cursor.execute(sql)
-result = cursor.fetchall()
-```
-## データベース変更の確定
-```
-conn.commit()
-```
-## 接続を閉じる
+
+### 接続を閉じる
 ```
 cursor.close()
 conn.close()
 ```
-## テーブル作成
+<br><br><br>
+## データベース
+### データベース作成
+```
+cursor.execute("CREATE DATABASE IF NOT EXISTS mydatabase")
+```
+<br><br><br>
+## テーブル
+### テーブル作成
 ```
 cursor.execute("CREATE TABLE test1 (id INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(255))")
 ```
 
-## テーブル追加
+### テーブル追加
 ```
 sql = "INSERT INTO test2 (user_id, user_pass) VALUE (%s, %s)"
 cursor.execute(sql, ("appearhuman", "sannsuu12"))
 cnx.commit()
 ```
 
-## テーブル表示
+### テーブル表示
 ```
 cursor.execute("SHOW TABLES")
 print(cursor.fetchall())
 ```
 
-## テーブル削除
+### テーブル削除
 ```
 sql = ("DROP TABLE テーブル名")
 cursor.execute(sql)
 ```
+<br><br><br>
+## データ
+### データ取得
+```
+sql = "select * from test1"
+cursor.execute(sql)
+result = cursor.fetchall()
+```
 
-## テーブルメモ
-test1 最初に作ったテーブル。使えない。  
-`user_test`
+### データ追加
 ```
-CREATE TABLE test1 (id INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(255))
+sql = "INSERT INTO user_info (username, email, passwrod) VALUE (%s, %s, %s)"
+cursor.execute(sql, (user_name, user_mail, user_pass))
+cnx.commit()
 ```
+
+### データ削除
+```
+sql = ('DELETE FROM student WHERE student_id = %s')
+cursor.execute(sql, (2,))
+cnx.commit()
+```
+<br><br><br>
+## メモ
+### テーブルメモ
 `user_info`
 ```
 cursor.execute("CREATE TABLE user_info (\
@@ -72,5 +86,16 @@ cursor.execute("CREATE TABLE user_info (\
                password VARCHAR(64),\
                self_introduction VARCHAR(160),\
                icon_path VARCHAR(59) DEFAULT '/pic/default.png'\
+               )")
+```
+
+`temporary_registration_list`
+```
+cursor.execute("CREATE TABLE temporary_registration_list (\
+               id INT PRIMARY KEY,\
+               email VARCHAR(50),\
+               time_limit VARCHAR(30),\
+               secret_key VARCHAR(24),\
+               padding_text VARCHAR(24)\
                )")
 ```
