@@ -18,6 +18,7 @@ def encrypt(key, data):
     data = bytes(data, 'utf-8')
     cipher = AES.new(key, AES.MODE_CBC)
     ct_bytes = cipher.encrypt(pad(data, AES.block_size))
+    print(ct_bytes)
     iv = b64encode(cipher.iv).decode('utf-8')
     ct = b64encode(ct_bytes).decode('utf-8')
     return ct, iv
@@ -35,24 +36,25 @@ def decrypt(key, iv, ct):
 def encrypt_do(password):
     key = create_key()
     ct, iv = encrypt(key, password)
-    print(len(ct),ct)
     pt = decrypt(key, iv, ct)
     return iv
-encrypt_do(str(datetime.now() + timedelta(minutes=30))+"aaaaaaaaaaaaaa")
-sys.exit()
+
 password = str(datetime.now() + timedelta(minutes=30))
-print(password)
+#print(password)
 # 新しい鍵の作成
 key = create_key()
 # 新しい鍵のprint
-print(key)
+#print(key)
 # 暗号化する
 ct, iv = encrypt(key, password)
 # 暗号化したパスワードのprint
-print(ct)
+#print(ct)
+
 # padding部のprint
-print(iv)
+#print(iv)
 # 復号化する
 pt = decrypt(key, iv, ct)
 # 結果確認のため、復号したものをprint
-decrypt_password = datetime.strptime(pt, "%Y-%m-%d %H:%M:%S.%f")
+
+for i in range(1):
+    encrypt_do(str(datetime.now() + timedelta(minutes=30)))

@@ -25,7 +25,7 @@ submit.addEventListener('click', (e) => {
   let password = document.getElementById('password');
   //----------------ハッシュ化--------------
   const encoder = new TextEncoder();
-  const msgUint8 = encoder.encode(message);
+  const msgUint8 = encoder.encode(password);
 
   // エンコードされたメッセージのSHA-256ハッシュを計算する
   // ここでWeb Crypto APIを使用している

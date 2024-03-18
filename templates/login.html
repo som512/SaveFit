@@ -7,7 +7,7 @@
   <h2 class="login-header">ログイン</h2>
 
   <form method="POST" class="login-container">
-    <p><input type="text" name="user_id" placeholder="ID"></p>
+    <p><input type="text" name="user_mail" placeholder="e-mail"></p>
     <div class="login-container-password">
       <p><input type="password" name="user_pass" placeholder="パスワード" id="password"></p>
       <input class="login-hidden-button" type="button" id="hidden_button" value="表示">
@@ -21,7 +21,7 @@
       <label class="warning_certification_different" for="">仮登録状態になっています。メールをご確認ください。</label>
     {% endif %}
 
-    <p><input type="submit" value="ログイン"></p>
+    <p><input type="submit" value="ログイン" id="submit"></p>
   </form>
 </div>
 
