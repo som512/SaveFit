@@ -12,16 +12,7 @@ cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database=
                             password=sqlserver_pass)
 cursor = cnx.cursor()
 
-cursor.execute("CREATE TABLE temporary_registration_list (\
-               id INT PRIMARY KEY,\
-               email VARCHAR(50),\
-               time_limit VARCHAR(30),\
-               secret_key VARCHAR(24),\
-               padding_text VARCHAR(24)\
-               )")
 
-cursor.execute("SHOW TABLES")
-print(cursor.fetchall())
 
 #SQL処理
 '''

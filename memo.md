@@ -73,6 +73,13 @@ sql = ('DELETE FROM student WHERE student_id = %s')
 cursor.execute(sql, (2,))
 cnx.commit()
 ```
+
+### データ更新
+```
+sql = ('UPDATE テーブル名 SET 更新する列名 = %s WHERE username = %s')
+cursor.execute(sql, ('', ''))
+cnx.commit()
+```
 <br><br><br>
 ## メモ
 ### テーブルメモ
@@ -80,7 +87,7 @@ cnx.commit()
 ```
 cursor.execute("CREATE TABLE user_info (\
                id INT AUTO_INCREMENT PRIMARY KEY, \
-               mail_certification BOOL,\
+               mail_certification BOOL DEFAULT False,\
                username VARCHAR(16),\
                email VARCHAR(50),\
                password VARCHAR(64),\
@@ -96,6 +103,7 @@ cursor.execute("CREATE TABLE temporary_registration_list (\
                email VARCHAR(50),\
                time_limit VARCHAR(30),\
                secret_key VARCHAR(24),\
+               encrypt_text VARCHAR(64),\
                padding_text VARCHAR(24)\
                )")
 ```

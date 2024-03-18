@@ -9,6 +9,7 @@ from datetime import timedelta
 import cv2 as cv
 import smtplib, ssl
 from email.mime.text import MIMEText
+from datetime import datetime, timedelta
 import json
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -143,17 +144,81 @@ def register():
         if len(mail_check_result)!=0:#メール重複あり
             return render_template('register.html', warning="e-mail")
         else:
+
             #SQL処理
             cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                                         password=sqlserver_pass)
             cursor = cnx.cursor()
-            sql = "INSERT INTO user_info (username, email, passwrod) VALUE (%s, %s, %s)"
+            sql = "select * from user_info where email=%s"
             cursor.execute(sql, (user_name, user_mail, user_pass))
             cnx.commit()
             cursor.close()
             cnx.close()
+
+            #暗号化
+            key = create_key()
+            deadline_time = str(datetime.now() + timedelta(minutes=30))
+            ct, iv = encrypt(key, deadline_time)
+
+            #SQL処理
+            cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                                        password=sqlserver_pass)
+            cursor = cnx.cursor()
+            sql = "INSERT INTO temporary_registration_list (username, email, passwrod) VALUE (%s, %s, %s)"
+            cursor.execute(sql, (user_name, user_mail, user_pass))
+            cnx.commit()
+            cursor.close()
+            cnx.close()
+
             return render_template('register_done.html')
     return render_template('register.html')
+URL = 'localhost:8000/register_certification?encrypt_text='+str()
+@app.route('/register_certification', methods=["GET"])
+def register_done():
+    encrypt_deadline = request.args.get("encrypt_text")
+    #SQL処理
+    cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                        password=sqlserver_pass)
+    cursor = cnx.cursor()
+    #メール重複　確認
+    sql = "select * from temporary_registration_list where encrypt_text=%s"
+    cursor.execute(sql, [encrypt_deadline])
+    temporary_registration_result = cursor.fetchall()
+    cursor.close()
+    cnx.close()
+    if len(temporary_registration_result)!=0:
+        id = temporary_registration_result[0][0]
+        decrypt_deadline = decrypt(key=temporary_registration_result[0][3], iv=temporary_registration_result[0][5], \
+                                ct=temporary_registration_result[0][4])
+        deadline_time = temporary_registration_result[0][2]
+        decrypt_deadline = datetime.strptime(decrypt_deadline, "%Y-%m-%d %H:%M:%S.%f")
+        deadline_time = datetime.strptime(deadline_time, "%Y-%m-%d %H:%M:%S.%f")
+
+        #SQL処理 
+        cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+        cursor = cnx.cursor()
+        sql = ('DELETE FROM temporary_registration_list WHERE encrypt_text=%s')
+        cursor.execute(sql, [encrypt_deadline])
+        cursor.close()
+        cnx.close()
+
+        if decrypt_deadline <= deadline_time:
+
+            #SQL処理 
+            cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                                password=sqlserver_pass)
+            cursor = cnx.cursor()
+            sql = ('UPDATE user_info SET mail_certification = %s WHERE id = %s')
+            cursor.execute(sql, (True, id))
+            cursor.close()
+            cnx.close()
+
+            return render_template('register_complete.html')
+        else:
+            return render_template('register_expired.html')
+    else:
+        return render_template('register_expired.html')
 
 @app.route("/logout") #ログアウトする
 def logout():

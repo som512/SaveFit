@@ -3,6 +3,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 from datetime import datetime, timedelta
+import sys
 
 # 鍵の作成
 def create_key():
@@ -34,8 +35,11 @@ def decrypt(key, iv, ct):
 def encrypt_do(password):
     key = create_key()
     ct, iv = encrypt(key, password)
+    print(len(ct),ct)
     pt = decrypt(key, iv, ct)
     return iv
+encrypt_do(str(datetime.now() + timedelta(minutes=30))+"aaaaaaaaaaaaaa")
+sys.exit()
 password = str(datetime.now() + timedelta(minutes=30))
 print(password)
 # 新しい鍵の作成
@@ -52,7 +56,3 @@ print(iv)
 pt = decrypt(key, iv, ct)
 # 結果確認のため、復号したものをprint
 decrypt_password = datetime.strptime(pt, "%Y-%m-%d %H:%M:%S.%f")
-if datetime.now() > decrypt_password:
-    print(datetime.now())
-    print(decrypt_password)
-
