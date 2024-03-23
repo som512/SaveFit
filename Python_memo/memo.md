@@ -92,7 +92,7 @@ cursor.execute("CREATE TABLE user_info (\
                email VARCHAR(50),\
                password VARCHAR(64),\
                self_introduction VARCHAR(160),\
-               icon_path VARCHAR(59) DEFAULT '/pic/default.png'\
+               icon_path VARCHAR(59) DEFAULT 'static/pic/default.png'\
                )")
 ```
 

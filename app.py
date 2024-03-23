@@ -80,14 +80,14 @@ app.permanent_session_lifetime = timedelta(days=1)#days=1
 
 @app.route('/')
 def index():
-    if "user_mail" in session:
-        user_mail = session["user_mail"]
+    if "id" in session:
+        id = session["id"]
         #SQL処理
         cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                             password=sqlserver_pass)
         cursor = cnx.cursor()
-        sql = "select username from user_info where email=%s"
-        cursor.execute(sql, (user_mail,))
+        sql = "select username from user_info where id=%s"
+        cursor.execute(sql, (id,))
         result = cursor.fetchall()
         user_name = result[0][0]
         cursor.close()
@@ -105,11 +105,12 @@ def login():
         cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                             password=sqlserver_pass)
         cursor = cnx.cursor()
-        sql = "select password, mail_certification from user_info where email=%s"
+        sql = "select id, password, mail_certification from user_info where email=%s"
         cursor.execute(sql, (form_user_mail,))
         result = cursor.fetchall()
-        user_pass = result[0][0]
-        mail_certification = result[0][1]
+        id = result[0][0]
+        user_pass = result[0][1]
+        mail_certification = result[0][2]
         cursor.close()
         cnx.close()
 
@@ -121,7 +122,8 @@ def login():
             return render_template('login.html', warning="certification_different")
         else:
             session.permanent = True
-            session["user_mail"] = form_user_mail
+            session["id"] = id
+            
             return redirect(url_for("index"))
     return render_template('login.html')
 
@@ -217,8 +219,8 @@ def register_certification():
         cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                             password=sqlserver_pass)
         cursor = cnx.cursor()
-        sql = ('DELETE FROM temporary_registration_list WHERE encrypt_text=%s')
-        cursor.execute(sql, [encrypt_deadline])
+        sql = ('DELETE FROM temporary_registration_list WHERE id=%s')
+        cursor.execute(sql, [id])
         cnx.commit()
         cursor.close()
         cnx.close()
@@ -243,40 +245,99 @@ def register_certification():
 
 @app.route("/logout") #ログアウトする
 def logout():
-  session.pop("user_mail", None) #削除
-  return redirect(url_for("index"))
+    session.pop("id", None) #削除
+    return redirect(url_for("index"))
 
 @app.route("/mypage")
 def mypage():
-  if "user_mail" in session:
-        user_mail = session["user_mail"]
+    if "id" in session:
+        id = session["id"]
         cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                             password=sqlserver_pass)
         cursor = cnx.cursor()
         #SQL処理
-        sql = "select username from user_info where email=%s"
-        cursor.execute(sql, (user_mail,))
-        user_name = cursor.fetchall()
+        sql = "select * from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        user_name = result[0][2]
+        self_introduction = result[0][5]
+        icon_path = result[0][6]
         cursor.close()
         cnx.close()
-        return render_template('live.html', user_name=user_name)
+        return render_template('mypage.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/mypage_edit", methods=['GET', 'POST'])
+def mypage_edit():
+    if "id" in session:
+        id = session["id"]
+        cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+        cursor = cnx.cursor()
+        #SQL処理
+        sql = "select * from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        user_name = result[0][2]
+        self_introduction = result[0][5]
+        icon_path = result[0][6]
+        cursor.close()
+        cnx.close()
+        if request.method == "POST":
+            post_user_name = request.form['username']
+            post_user_icon = request.form['icon']
+            post_user_intro = request.form['self_introduction']
+
+            #SQL処理
+            cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+            cursor = cnx.cursor()
+
+            if len(post_user_icon)==0:
+                sql = ('UPDATE user_info SET username=%s, self_introduction=%s WHERE id = %s')
+                cursor.execute(sql, (post_user_name, post_user_intro, id))
+                cnx.commit()
+            else:
+                user_icon_b64dec = b64decode(post_user_icon)
+                icon_save_path = 'static/pic/icon_'+str(id)+'.jpg'
+                with open(icon_save_path, mode='wb') as f:
+                    f.write(user_icon_b64dec)
+
+                sql = ('UPDATE user_info SET username=%s, self_introduction=%s, icon_path=%s WHERE id = %s')
+                cursor.execute(sql, (post_user_name, post_user_intro, icon_save_path, id))
+                cnx.commit()
+            cursor.close()
+            cnx.close()
+
+            return redirect(url_for("mypage"))
+        else:
+            return render_template('mypage_edit.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
+    return redirect(url_for("login"))
 
 @app.route("/live")
 def live():
-    if "user_mail" in session:
-        user_mail = session["user_mail"]
+    if "id" in session:
+        id = session["id"]
         cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
                             password=sqlserver_pass)
         cursor = cnx.cursor()
         #SQL処理
-        sql = "select username from user_info where email=%s"
-        cursor.execute(sql, (user_mail,))
-        user_name = cursor.fetchall()
+        sql = "select * from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        user_name = result[0][2]
+        self_introduction = result[0][5]
+        icon_path = result[0][6]
         cursor.close()
         cnx.close()
-        return render_template('register.html', user_name=user_name)
-    return redirect(url_for("login"))
+        return render_template('live.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
+    else:
+        return redirect(url_for("login"))
 
+@app.route("/password_reset")
+def password_reset():
+    return render_template('password_reset.html')
 
 
 @app.route("/get_ip", methods=["GET"])

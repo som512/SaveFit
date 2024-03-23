@@ -15,6 +15,7 @@
     </div>
     {% if warning == "pass_different" %}
       <label class="warning_pass_different" for="">パスワードが違います。</label>
+      <label class="">パスワードを忘れた場合は<a href="/password_reset">こちら</a></label>
     {% elif warning == "again" %}
       <label class="warning_again" for="">エラーが発生しました。もう一度ログインしてください。</label>
     {% elif warning == "certification_different" %}
