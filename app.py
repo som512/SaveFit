@@ -315,7 +315,27 @@ def mypage_edit():
             return render_template('mypage_edit.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
     return redirect(url_for("login"))
 
-@app.route("/live")
+@app.route("/account_setting", methods=['GET', 'POST'])
+def account_setting():
+    if "id" in session:
+        id = session["id"]
+        cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+        cursor = cnx.cursor()
+        #SQL処理
+        sql = "select * from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        user_name = result[0][2]
+        self_introduction = result[0][5]
+        icon_path = result[0][6]
+        cursor.close()
+        cnx.close()
+        return render_template('account_setting.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/live", methods=['GET', 'POST'])
 def live():
     if "id" in session:
         id = session["id"]
@@ -331,14 +351,101 @@ def live():
         icon_path = result[0][6]
         cursor.close()
         cnx.close()
-        return render_template('live.html', user_name=user_name, self_introduction=self_introduction, icon_path=icon_path)
+
+        
+        # クエリパラメータ'room'に文字や記号などが渡された時のエラー処理
+        try:
+            room_num = int(request.args.get("room"))
+            room_people = int(request.args.get("roompeople"))
+            if (1 <= room_num <= 9)&(room_people<=50):
+                return render_template('live.html', user_name=user_name, \
+                                        self_introduction=self_introduction, \
+                                        icon_path=icon_path, \
+                                        room_num=str(room_num),\
+                                        app_id=password_dict['skyway_app_id'],\
+                                        secret_key=password_dict['skyway_secret_key']
+                                        )
+            else:
+                return redirect(url_for("live_room_select"))
+        except:
+            return redirect(url_for("live_room_select"))
+
     else:
         return redirect(url_for("login"))
 
-@app.route("/password_reset")
-def password_reset():
-    return render_template('password_reset.html')
+@app.route("/live_room_select")
+def live_room_select():
+    if "id" in session:
+        id = session["id"]
+        #SQL処理
+        cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+        cursor = cnx.cursor()
+        sql = "select username from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        user_name = result[0][0]
+        cursor.close()
+        cnx.close()
+        return render_template('live_room_select.html', user_name=user_name,\
+                                app_id=password_dict['skyway_app_id'],\
+                                secret_key=password_dict['skyway_secret_key'])
+    else:
+        return redirect(url_for("login"))
 
+@app.route("/password_reset", methods=['GET', 'POST'])
+def password_reset():
+    warning = ''
+    if "id" in session:
+        id = session["id"]
+
+        #SQL処理
+        cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                            password=sqlserver_pass)
+        cursor = cnx.cursor()
+        sql = "select username, password from user_info where id=%s"
+        cursor.execute(sql, (id,))
+        result = cursor.fetchall()
+        sql_username = result[0][0]
+        sql_pass = result[0][1]
+        cursor.close()
+        cnx.close()
+
+        if request.method == 'POST':
+            user_pass = request.form['user_pass']
+            user_newpass = request.form['user_newpass']
+            if user_pass == sql_pass:
+                #SQL処理 
+                cnx=mysql.connector.connect(host="localhost", user="root", port="3306",database="test", \
+                                    password=sqlserver_pass)
+                cursor = cnx.cursor()
+                sql = ('UPDATE user_info SET password = %s WHERE id = %s')
+                cursor.execute(sql, (user_newpass, id))
+                cnx.commit()
+                cursor.close()
+                cnx.close()
+                return redirect(url_for("account_setting"))
+            else:
+                warning = 'pass_different'
+                return render_template('password_reset.html', user_name=sql_username, warning=warning)
+        else:
+            return render_template('password_reset.html', user_name=sql_username)
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/account_delete")
+def account_delete():
+    return render_template('account_delete.html')
+
+
+
+
+
+
+
+@app.route("/a")
+def a():
+    return render_template('a.html')
 
 @app.route("/get_ip", methods=["GET"])
 def get_ip():

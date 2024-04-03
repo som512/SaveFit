@@ -107,3 +107,14 @@ cursor.execute("CREATE TABLE temporary_registration_list (\
                padding_text VARCHAR(24)\
                )")
 ```
+
+`post`
+```
+cursor.execute("CREATE TABLE temporary_registration_list (\
+               id INT PRIMARY KEY,\
+               time DATETIME,\
+               post_data TEXT,\
+
+
+               )")
+```
